@@ -24,38 +24,79 @@
 - **Database**: SQLite (Dev), PostgreSQL (Prod ready)
 - **Tooling**: UV (Python package manager), Pytest
 
-## 📚 Documentation
-
-Detailed documentation is available in the `docs/` directory:
-
-- [**Setup & Installation**](docs/setup.md): Step-by-step guide to get running locally.
-- [**Architecture**](docs/architecture.md): Overview of the project structure and key files.
-- [**API Reference**](docs/api.md): Details on API endpoints and usage.
-- [**Contributing**](docs/contributing.md): Guidelines for developers.
+---
 
 ## ⚡ Quick Start
 
-1.  **Backend**:
+### Prerequisites
+
+- **Python**: 3.12+
+- **Node.js**: 18+
+- **UV**: Python package manager (Recommended)
+
+### Backend Setup
+
+1.  **Install Dependencies**
     ```bash
     uv sync
-    uv run python manage.py migrate
-    uv run python manage.py runserver
+    # Or: uv pip install -r requirements.txt
     ```
 
-2.  **Frontend**:
+2.  **Database & Admin**
+    ```bash
+    uv run python manage.py migrate
+    uv run python manage.py createsuperuser
+    ```
+
+3.  **Run Server**
+    ```bash
+    uv run python manage.py runserver 0.0.0.0:8000
+    ```
+
+### Frontend Setup
+
+1.  **Install & Run**
     ```bash
     cd frontend
     npm install
     npm run dev
     ```
 
-For full details, see the [Setup Guide](docs/setup.md).
+---
+
+## 🏗️ Architecture & Project Structure
+
+### Backend (Django)
+
+- **`core/`**: Project settings and main URL routing (includes JWT endpoints).
+- **`inventory/`**: Main app logic.
+    - **`models.py`**: `Category`, `Supplier`, `Order`, `Product`.
+    - **`views.py`**: API logic, including automatic stock deduction on order creation.
+    - **`serializers.py`**: Data validation and transformation.
+
+### Frontend (React)
+
+- **`src/api/api.js`**: Centralized API client.
+- **`src/pages/`**: `InventoryManager`, `OrderSystem`, `Login`.
+- **`src/App.jsx`**: Main routing and layout.
 
 ---
 
-## 🤝 Contributing
+## 🔌 API Overview
 
-Contributions are welcome! Please check out our [Contributing Guide](docs/contributing.md) to get started.
+Base URL: `/api/`
+
+### Authentication (JWT)
+- **Login**: `POST /api/token/`
+- **Refresh**: `POST /api/token/refresh/`
+
+### Key Endpoints
+- **Products**: `GET/POST /api/products/`
+- **Orders**: `POST /api/orders/` (Triggers stock update)
+- **Suppliers**: `GET/POST /api/suppliers/`
+
+---
+
 
 ## 📄 License
 
