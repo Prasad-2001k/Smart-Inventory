@@ -1,0 +1,18 @@
+[project]
+name = "smart-inventory"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.0",
+    "django-cors-headers>=4.9.0",
+    "django-extensions>=4.1",
+    "django-filter>=25.2",
+    "django-phonenumber-field[phonenumbers]>=8.4.0",
+    "djangorestframework>=3.16.1",
+    "djangorestframework-simplejwt>=5.5.1",
+    "dotenv>=0.9.9",
+    "drf-spectacular>=0.29.0",
+    "python-decouple>=3.8",
+]
