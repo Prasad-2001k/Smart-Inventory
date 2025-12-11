@@ -45,21 +45,27 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
-# CORS allowed origins (comma separated)
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if os.getenv('CORS_ALLOWED_ORIGINS') else []
+# CORS allowed origins
+_env_cors = os.getenv('CORS_ALLOWED_ORIGINS', '')
+if _env_cors:
+    CORS_ALLOWED_ORIGINS = [o for o in _env_cors.split(',') if o]
+else:
+    # sensible local defaults; adjust per environment
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",   # React
+        "http://localhost:5173",   # Vite
+        "http://localhost:8080",   # Vue
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:8080",
+    ]
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n28f=p2l0%w+@iv+^7!b@pdt(^8$d*4e(!$#rf1vu1)r!lb4$#'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+#SECRET_KEY = 'django-insecure-n28f=p2l0%w+@iv+^7!b@pdt(^8$d*4e(!$#rf1vu1)r!lb4$#'
 
 # Application definition
 
@@ -85,31 +91,31 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # You can keep SessionAuthentication for Django Admin access
-        'rest_framework.authentication.SessionAuthentication', 
+        # Keep SessionAuthentication for Django Admin access
+        'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
-    )
+    ),
 }
 
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    # How long the access token is valid (e.g., 5 minutes)
+    # Token lifetimes
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    # How long the refresh token is valid (e.g., 1 day)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 
-    # Configure the token types
-    'ROTATE_REFRESH_TOKENS': True, # To improve security
+    # Token handling
+    'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'YOUR_SECRET_KEY', # Django's SECRET_KEY is used by default
+    # Use env var if provided, else fall back to Django SECRET_KEY
+    'SIGNING_KEY': os.getenv('JWT_SECRET', SECRET_KEY),
     'VERIFYING_KEY': None,
     'AUDIENCE': None,
     'ISSUER': None,
-    'AUTH_HEADER_TYPES': ('Bearer',), # Standard JWT header
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
@@ -151,12 +157,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -196,17 +202,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# CORS Settings - Allow frontend to access API
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React default port
-    "http://localhost:5173",  # Vite default port
-    "http://localhost:8080",  # Vue default port
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173",  # Vite default port
-    "http://127.0.0.1:8080",
-]
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # For development only - allows all origins (remove in production!)
 CORS_ALLOW_ALL_ORIGINS = False  # Must be False when using credentials

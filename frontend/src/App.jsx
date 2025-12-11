@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import InventoryManager from './pages/InventoryManager';
 import OrderSystem from './pages/OrderSystem';
@@ -40,7 +40,7 @@ const Dashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-                <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:border-blue-200">
+                <Link to="/manage" className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:border-blue-200 cursor-pointer transform hover:-translate-y-1">
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <span className="text-3xl">📦</span>
                     </div>
@@ -48,9 +48,12 @@ const Dashboard = () => {
                     <p className="text-gray-600 leading-relaxed">
                         Add products, categories, and suppliers to build your inventory database
                     </p>
-                </div>
+                    <div className="mt-4 text-blue-600 font-semibold flex items-center group-hover:translate-x-2 transition-transform">
+                        Get Started →
+                    </div>
+                </Link>
                 
-                <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:border-green-200">
+                <Link to="/orders" className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:border-green-200 cursor-pointer transform hover:-translate-y-1">
                     <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <span className="text-3xl">🛒</span>
                     </div>
@@ -58,9 +61,12 @@ const Dashboard = () => {
                     <p className="text-gray-600 leading-relaxed">
                         Create orders and automatically update stock levels in real-time
                     </p>
-                </div>
+                    <div className="mt-4 text-green-600 font-semibold flex items-center group-hover:translate-x-2 transition-transform">
+                        Get Started →
+                    </div>
+                </Link>
                 
-                <div className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:border-purple-200">
+                <Link to="/manage" className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:border-purple-200 cursor-pointer transform hover:-translate-y-1">
                     <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <span className="text-3xl">📊</span>
                     </div>
@@ -68,7 +74,10 @@ const Dashboard = () => {
                     <p className="text-gray-600 leading-relaxed">
                         Monitor inventory levels and get alerts for low stock items
                     </p>
-                </div>
+                    <div className="mt-4 text-purple-600 font-semibold flex items-center group-hover:translate-x-2 transition-transform">
+                        View Stock →
+                    </div>
+                </Link>
             </div>
         </div>
     </div>
@@ -82,15 +91,20 @@ function AppContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
       {isAuthenticated && (
-        <nav className="bg-white shadow-md border-b border-gray-200 sticky top-0 z-50">
+        <nav className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
               {/* Logo/Brand */}
               <div className="flex items-center">
                 <div className="flex-shrink-0 flex items-center">
-                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    Smart Inventory
-                  </span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <span className="text-xl">📦</span>
+                    </div>
+                    <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                      Smart Inventory
+                    </span>
+                  </div>
                 </div>
               </div>
               
@@ -99,9 +113,9 @@ function AppContent() {
                 <NavLink 
                   to="/" 
                   className={({ isActive }) => 
-                    `px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    `px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                       isActive 
-                        ? 'bg-blue-600 text-white shadow-md' 
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
                         : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
                     }`
                   }
@@ -111,9 +125,9 @@ function AppContent() {
                 <NavLink 
                   to="/manage" 
                   className={({ isActive }) => 
-                    `px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    `px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                       isActive 
-                        ? 'bg-blue-600 text-white shadow-md' 
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
                         : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
                     }`
                   }
@@ -123,9 +137,9 @@ function AppContent() {
                 <NavLink 
                   to="/orders" 
                   className={({ isActive }) => 
-                    `px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    `px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                       isActive 
-                        ? 'bg-blue-600 text-white shadow-md' 
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
                         : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
                     }`
                   }
@@ -143,7 +157,7 @@ function AppContent() {
                 )}
                 <button
                   onClick={logout}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-all"
+                  className="px-5 py-2.5 text-sm font-semibold text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all shadow-sm hover:shadow-md"
                 >
                   Logout
                 </button>

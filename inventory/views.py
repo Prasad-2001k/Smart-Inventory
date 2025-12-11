@@ -14,6 +14,27 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Product, Category, Supplier, Order, OrderItem
+
+
+def _refresh_cookie_settings():
+    """
+    Compute cookie settings for the refresh token based on DEBUG.
+    In DEBUG (localhost over HTTP), allow Secure=False so the cookie is accepted.
+    In production, use Secure=True and SameSite=None for cross-site (frontend on different domain).
+    """
+    if settings.DEBUG:
+        return {
+            "max_age": 7 * 24 * 3600,
+            "httponly": True,
+            "secure": False,    # allow over http://localhost
+            "samesite": "None", # cross-site for different dev ports
+        }
+    return {
+        "max_age": 7 * 24 * 3600,
+        "httponly": True,
+        "secure": True,
+        "samesite": "None",
+    }
 from .serializers import (
     ProductSerializer,
     SupplierSerializer,
@@ -194,31 +215,24 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        Create Order while protecting stock updates with a DB transaction and row-level locks.
-
-        Expected request payload shape:
+        Create Order while validating stock with a DB transaction and row-level locks.
+        Expected payload:
         {
-            "customer": ...,
             "items": [
-                {"product": <product_id>, "quantity": <int>, "price": <decimal>},
-                ...
-            ],
-            ...
+                {"product": <product_id>, "quantity": <int>}
+            ]
         }
-
-        Assumes OrderSerializer writes nested OrderItems and that the "product"
-        in validated_data['items'] is a Product instance (PrimaryKeyRelatedField).
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        items = serializer.validated_data.get("items", [])
+        items = serializer.validated_data.pop("items", [])
 
+        # If no items provided, allow creating an empty order (frontend two-step flow)
         if not items:
-            return Response(
-                {"detail": "Order must contain at least one item."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            order = serializer.save()
+            out_serializer = self.get_serializer(order)
+            return Response(out_serializer.data, status=status.HTTP_201_CREATED)
 
         # Collect product ids from the Product instances in items
         product_ids = [item["product"].id for item in items]
@@ -259,16 +273,19 @@ class OrderViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-            # Deduct stock now that all checks pass
+            # Create the order first (without items)
+            order = serializer.save()
+
+            # Create OrderItems; stock will be deducted by signal on OrderItem post_save
             for it in items:
                 product = it["product"]
                 qty = int(it["quantity"])
-                locked_product = products_map[product.id]
-                locked_product.current_stock -= qty
-                locked_product.save(update_fields=["current_stock"])
-
-            # Create the order + order items from the serializer
-            order = serializer.save()
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=qty,
+                    price_at_purchase=product.price,
+                )
 
         out_serializer = self.get_serializer(order)
         return Response(out_serializer.data, status=status.HTTP_201_CREATED)
@@ -325,22 +342,15 @@ def register(request):
             },
             "tokens": {
                 "access": access_token,
+                "refresh": refresh_token,  # return refresh for body-based flow
             },
         },
         status=status.HTTP_201_CREATED,
     )
 
     # Set refresh token in HttpOnly cookie (not exposed to JS)
-    cookie_secure = not settings.DEBUG
-    max_age = 7 * 24 * 3600  # 7 days
-    response.set_cookie(
-        "refresh_token",
-        refresh_token,
-        max_age=max_age,
-        httponly=True,
-        secure=cookie_secure,
-        samesite="Lax",
-    )
+    cookie_opts = _refresh_cookie_settings()
+    response.set_cookie("refresh_token", refresh_token, **cookie_opts)
     return response
 
 
@@ -380,21 +390,14 @@ def login(request):
             },
             "tokens": {
                 "access": access_token,
+                "refresh": refresh_token,  # return refresh for body-based flow
             },
         },
         status=status.HTTP_200_OK,
     )
 
-    cookie_secure = not settings.DEBUG
-    max_age = 7 * 24 * 3600
-    response.set_cookie(
-        "refresh_token",
-        refresh_token,
-        max_age=max_age,
-        httponly=True,
-        secure=cookie_secure,
-        samesite="Lax",
-    )
+    cookie_opts = _refresh_cookie_settings()
+    response.set_cookie("refresh_token", refresh_token, **cookie_opts)
     return response
 
 
@@ -402,9 +405,11 @@ def login(request):
 @permission_classes([AllowAny])
 def token_refresh_cookie(request):
     """
-    Issue a new access token using the refresh token stored in HttpOnly cookie.
+    Issue a new access token using the refresh token.
+    - Tries HttpOnly cookie `refresh_token`
+    - Falls back to JSON body {"refresh": "<token>"}
     """
-    refresh_token = request.COOKIES.get("refresh_token")
+    refresh_token = request.COOKIES.get("refresh_token") or request.data.get("refresh")
     if not refresh_token:
         return Response(
             {"detail": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED

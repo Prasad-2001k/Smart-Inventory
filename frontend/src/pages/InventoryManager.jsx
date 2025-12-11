@@ -137,7 +137,7 @@ export default function InventoryManager() {
     };
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
@@ -151,31 +151,31 @@ export default function InventoryManager() {
 
                 {/* Alert Messages */}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-lg shadow-sm animate-fade-in">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-800 rounded-xl shadow-lg animate-fade-in">
                         <div className="flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                             </svg>
-                            {error}
+                            <span className="font-medium">{error}</span>
                         </div>
                     </div>
                 )}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-800 rounded-lg shadow-sm animate-fade-in">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-800 rounded-xl shadow-lg animate-fade-in">
                         <div className="flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            {success}
+                            <span className="font-medium">{success}</span>
                         </div>
                     </div>
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                     {/* 1. Category Form */}
-                    <section className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 lg:p-10 border border-gray-100">
+                    <section className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-8 lg:p-10 border border-gray-200/50 hover:border-blue-300 transform hover:-translate-y-1">
                         <div className="flex items-center mb-8">
-                            <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-4">
+                            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                                 <span className="text-2xl">📁</span>
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900">Add Category</h3>
@@ -186,7 +186,7 @@ export default function InventoryManager() {
                                     Category Name
                                 </label>
                                 <input 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     placeholder="e.g. Electronics, Furniture" 
                                     value={catName}
                                     onChange={e => setCatName(e.target.value)}
@@ -197,7 +197,7 @@ export default function InventoryManager() {
                             <button 
                                 type="submit" 
                                 disabled={loading}
-                                className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center">
@@ -213,9 +213,9 @@ export default function InventoryManager() {
                     </section>
 
                     {/* 2. Supplier Form */}
-                    <section className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 lg:p-10 border border-gray-100">
+                    <section className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-8 lg:p-10 border border-gray-200/50 hover:border-green-300 transform hover:-translate-y-1">
                         <div className="flex items-center mb-8">
-                            <div className="w-14 h-14 bg-linear-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-4">
+                            <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                                 <span className="text-2xl">🏢</span>
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900">Add Supplier</h3>
@@ -226,7 +226,7 @@ export default function InventoryManager() {
                                     Supplier Name
                                 </label>
                                 <input 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     placeholder="Company or Individual Name" 
                                     value={supData.name} 
                                     onChange={e => setSupData({...supData, name: e.target.value})} 
@@ -239,7 +239,7 @@ export default function InventoryManager() {
                                     Phone Number
                                 </label>
                                 <input 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     placeholder="+91 1234567890" 
                                     value={supData.phone} 
                                     onChange={e => setSupData({...supData, phone: e.target.value})} 
@@ -252,7 +252,7 @@ export default function InventoryManager() {
                                     Email Address
                                 </label>
                                 <input 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     placeholder="supplier@example.com" 
                                     type="email" 
                                     value={supData.email} 
@@ -264,7 +264,7 @@ export default function InventoryManager() {
                             <button 
                                 type="submit" 
                                 disabled={loading}
-                                className="w-full bg-linear-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center">
@@ -280,9 +280,9 @@ export default function InventoryManager() {
                     </section>
 
                     {/* 3. Product Form */}
-                    <section className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 lg:p-10 border border-gray-100 lg:col-span-1">
+                    <section className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-8 lg:p-10 border border-gray-200/50 hover:border-purple-300 transform hover:-translate-y-1 lg:col-span-1">
                         <div className="flex items-center mb-8">
-                            <div className="w-14 h-14 bg-linear-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
+                            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                                 <span className="text-2xl">📦</span>
                             </div>
                             <h3 className="text-2xl font-bold text-gray-900">Add Product</h3>
@@ -293,7 +293,7 @@ export default function InventoryManager() {
                                     Product Name
                                 </label>
                                 <input 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     placeholder="Enter product name" 
                                     value={prodData.name} 
                                     onChange={e => setProdData({...prodData, name: e.target.value})} 
@@ -306,7 +306,7 @@ export default function InventoryManager() {
                                     SKU (Unique ID)
                                 </label>
                                 <input 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     placeholder="e.g. PROD-001" 
                                     value={prodData.sku} 
                                     onChange={e => setProdData({...prodData, sku: e.target.value})} 
@@ -320,7 +320,7 @@ export default function InventoryManager() {
                                         Price
                                     </label>
                                     <input 
-                                        className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                        className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                         placeholder="0.00" 
                                         type="number" 
                                         step="0.01"
@@ -335,7 +335,7 @@ export default function InventoryManager() {
                                         Stock
                                     </label>
                                     <input 
-                                        className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                        className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                         placeholder="0" 
                                         type="number" 
                                         value={prodData.current_stock} 
@@ -352,7 +352,7 @@ export default function InventoryManager() {
                                     Category
                                 </label>
                                 <select 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     value={prodData.category} 
                                     onChange={e => setProdData({...prodData, category: e.target.value})} 
                                     required
@@ -368,7 +368,7 @@ export default function InventoryManager() {
                                     Supplier
                                 </label>
                                 <select 
-                                    className="w-full px-5 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                                    className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white/50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md"
                                     value={prodData.supplier} 
                                     onChange={e => setProdData({...prodData, supplier: e.target.value})} 
                                     required
@@ -382,7 +382,7 @@ export default function InventoryManager() {
                             <button 
                                 type="submit" 
                                 disabled={loading}
-                                className="w-full bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center">
@@ -399,10 +399,10 @@ export default function InventoryManager() {
                 </div>
 
                 {/* Products List with Stock Update */}
-                <section className="mt-12 bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                <section className="mt-12 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200/50">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center">
-                            <div className="w-14 h-14 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mr-4">
+                            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                                 <span className="text-2xl">📊</span>
                             </div>
                             <div>
@@ -412,9 +412,9 @@ export default function InventoryManager() {
                         </div>
                         <button
                             onClick={refreshDropdowns}
-                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all text-sm font-medium"
+                            className="px-5 py-2.5 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 rounded-xl transition-all text-sm font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                         >
-                            Refresh
+                            🔄 Refresh
                         </button>
                     </div>
 
@@ -425,19 +425,19 @@ export default function InventoryManager() {
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stock</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Update Stock</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Product</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">SKU</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Current Stock</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Update Stock</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {products.map((product) => (
-                                        <tr key={product.id} className="hover:bg-gray-50">
+                                        <tr key={product.id} className="hover:bg-blue-50/50 transition-colors">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">{product.name}</div>
                                                 <div className="text-sm text-gray-500">₹{product.price}</div>
@@ -461,7 +461,7 @@ export default function InventoryManager() {
                                                     min="0"
                                                     value={stockUpdates[product.id] !== undefined ? stockUpdates[product.id] : product.current_stock}
                                                     onChange={(e) => setStockUpdates({ ...stockUpdates, [product.id]: e.target.value })}
-                                                    className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                                                    className="w-24 px-3 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm shadow-sm hover:shadow-md transition-all"
                                                     placeholder="New stock"
                                                 />
                                             </td>
@@ -474,7 +474,7 @@ export default function InventoryManager() {
                                                         handleStockUpdate(product.id, newStock);
                                                     }}
                                                     disabled={updatingStock[product.id] || (stockUpdates[product.id] !== undefined && parseInt(stockUpdates[product.id]) === product.current_stock)}
-                                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                                                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0"
                                                 >
                                                     {updatingStock[product.id] ? (
                                                         <span className="flex items-center">

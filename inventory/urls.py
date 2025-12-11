@@ -2,6 +2,7 @@
 
 from rest_framework.routers import DefaultRouter
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     ProductViewSet, CategoryViewSet, SupplierViewSet, 
     OrderViewSet, OrderItemViewSet, register, login, logout, get_user, token_refresh_cookie
@@ -20,6 +21,8 @@ urlpatterns = [
     path('auth/login/', login, name='login'),
     path('auth/logout/', logout, name='logout'),
     path('auth/user/', get_user, name='get_user'),
-    # cookie-backed refresh (available at /api/token/refresh/ because core includes inventory.urls first)
+    # cookie-or-body refresh (custom)
     path('token/refresh/', token_refresh_cookie, name='token_refresh_cookie'),
+    # standard SimpleJWT body-based refresh: expects {"refresh": "<token>"}
+    path('token/refresh-body/', TokenRefreshView.as_view(), name='token_refresh_body'),
 ] + router.urls

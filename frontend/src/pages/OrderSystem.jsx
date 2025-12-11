@@ -107,22 +107,22 @@ export default function OrderSystem() {
 
                 {/* Alert Messages */}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-lg shadow-sm">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-800 rounded-xl shadow-lg animate-fade-in">
                         <div className="flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                             </svg>
-                            {error}
+                            <span className="font-medium">{error}</span>
                         </div>
                     </div>
                 )}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-800 rounded-lg shadow-sm">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 text-green-800 rounded-xl shadow-lg animate-fade-in">
                         <div className="flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                             </svg>
-                            {success}
+                            <span className="font-medium">{success}</span>
                         </div>
                     </div>
                 )}
@@ -131,20 +131,20 @@ export default function OrderSystem() {
                     {/* Left: Product List */}
                     <div className="flex-1">
                         <div className="flex items-center mb-6">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
                                 <span className="text-xl">🛍️</span>
                             </div>
                             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Available Products</h2>
                         </div>
                         {products.length === 0 ? (
-                            <div className="text-center py-16 bg-white rounded-xl shadow-lg border border-gray-100">
+                            <div className="text-center py-16 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50">
                                 <div className="text-6xl mb-4">📦</div>
-                                <p className="text-gray-600 text-lg">No products available</p>
+                                <p className="text-gray-600 text-lg font-medium">No products available</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
                                 {products.map(p => (
-                                    <div key={p.id} className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 group">
+                                    <div key={p.id} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 border border-gray-200/50 group transform hover:-translate-y-1">
                                         <h4 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-blue-600 transition-colors">{p.name}</h4>
                                         <div className="space-y-2 mb-4">
                                             <div className="flex items-center justify-between">
@@ -157,7 +157,7 @@ export default function OrderSystem() {
                                                     {p.current_stock}
                                                 </span>
                                             </div>
-                                            <div className="pt-2 border-t border-gray-100">
+                                            <div className="pt-2 border-t border-gray-200">
                                                 <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                                                     ₹{parseFloat(p.price).toFixed(2)}
                                                 </p>
@@ -166,10 +166,10 @@ export default function OrderSystem() {
                                         <button 
                                             onClick={() => addToCart(p)}
                                             disabled={p.current_stock < 1 || loading}
-                                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
+                                            className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
                                                 p.current_stock < 1 
                                                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-                                                    : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5'
+                                                    : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0'
                                             }`}
                                         >
                                             {p.current_stock < 1 ? 'Out of Stock' : 'Add to Cart'}
@@ -181,10 +181,10 @@ export default function OrderSystem() {
                     </div>
 
                     {/* Right: Cart */}
-                    <div className="w-full xl:w-96 xl:flex-shrink-0">
-                        <div className="bg-white rounded-xl shadow-lg p-7 lg:p-9 border border-gray-100 sticky top-20">
+                    <div className="w-full xl:w-96 xl:shrink-0">
+                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-7 lg:p-9 border border-gray-200/50 sticky top-20">
                             <div className="flex items-center mb-8">
-                                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
                                     <span className="text-xl">🛒</span>
                                 </div>
                                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Shopping Cart</h2>
@@ -200,7 +200,7 @@ export default function OrderSystem() {
                                 <>
                                     <div className="space-y-5 mb-8 max-h-96 overflow-y-auto pr-3">
                                         {cart.map((item) => (
-                                            <div key={item.product.id} className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                                            <div key={item.product.id} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                                                 <div className="flex justify-between items-start mb-3">
                                                     <div className="flex-1">
                                                         <strong className="text-gray-900 block mb-1">{item.product.name}</strong>
@@ -224,7 +224,7 @@ export default function OrderSystem() {
                                                         max={item.product.current_stock} 
                                                         value={item.quantity}
                                                         onChange={(e) => updateQuantity(item.product.id, e.target.value)}
-                                                        className="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none bg-white"
+                                                        className="w-20 px-3 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none bg-white shadow-sm hover:shadow-md transition-all"
                                                         disabled={loading}
                                                     />
                                                     <span className="text-xs text-gray-500">
@@ -250,7 +250,7 @@ export default function OrderSystem() {
                                         <button 
                                             onClick={handleCheckout}
                                             disabled={loading || cart.length === 0}
-                                            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0"
                                         >
                                             {loading ? (
                                                 <span className="flex items-center justify-center">

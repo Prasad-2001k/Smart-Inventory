@@ -75,7 +75,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
+    # Allow write on items for order creation; optional to support two-step create
+    items = OrderItemSerializer(many=True, required=False)
 
     class Meta:
         model = Order
