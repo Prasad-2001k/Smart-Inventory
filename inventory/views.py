@@ -22,7 +22,8 @@ from .services import order_service
 def _refresh_cookie_settings():
     """
     Compute cookie settings for the refresh token based on DEBUG.
-    In DEBUG (localhost over HTTP), allow Secure=False so the cookie is accepted.
+    In DEBUG (localhost over HTTP), use SameSite="Lax" with Secure=False.
+    Modern browsers require Secure=True when SameSite=None, so we use Lax for localhost.
     In production, use Secure=True and SameSite=None for cross-site (frontend on different domain).
     """
     if settings.DEBUG:
@@ -30,13 +31,15 @@ def _refresh_cookie_settings():
             "max_age": 7 * 24 * 3600,
             "httponly": True,
             "secure": False,    # allow over http://localhost
-            "samesite": "None", # cross-site for different dev ports
+            "samesite": "Lax",  # Lax works for same-site localhost (different ports are same-site)
+            "path": "/api/",    # Only send cookie for API requests
         }
     return {
         "max_age": 7 * 24 * 3600,
         "httponly": True,
-        "secure": True,
-        "samesite": "None",
+        "secure": True,        # Required for SameSite=None in production
+        "samesite": "None",    # Cross-site for different domains
+        "path": "/api/",       # Only send cookie for API requests
     }
 from .serializers import (
     ProductSerializer,
@@ -365,6 +368,7 @@ def login(request):
 def token_refresh_cookie(request):
     """
     Issue a new access token using the refresh token from HttpOnly cookie only.
+    If ROTATE_REFRESH_TOKENS is enabled, also update the refresh token cookie.
     """
     refresh_token = request.COOKIES.get("refresh_token")
     if not refresh_token:
@@ -374,7 +378,20 @@ def token_refresh_cookie(request):
     try:
         refresh = RefreshToken(refresh_token)
         access = str(refresh.access_token)
-        return Response({"access": access}, status=status.HTTP_200_OK)
+        
+        # Create response with new access token
+        response = Response({"access": access}, status=status.HTTP_200_OK)
+        
+        # If token rotation is enabled, update the refresh token cookie
+        # When ROTATE_REFRESH_TOKENS=True, accessing refresh.access_token rotates the token
+        # The refresh object now contains the new refresh token
+        rotate_tokens = getattr(settings, 'SIMPLE_JWT', {}).get('ROTATE_REFRESH_TOKENS', False)
+        if rotate_tokens:
+            new_refresh_token = str(refresh)
+            cookie_opts = _refresh_cookie_settings()
+            response.set_cookie("refresh_token", new_refresh_token, **cookie_opts)
+        
+        return response
     except Exception:
         return Response(
             {"detail": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED
@@ -388,7 +405,13 @@ def logout(request):
     response = Response(
         {"message": "Successfully logged out"}, status=status.HTTP_200_OK
     )
-    response.delete_cookie("refresh_token", samesite="Lax")
+    # Delete cookie with same settings as when it was set
+    cookie_opts = _refresh_cookie_settings()
+    response.delete_cookie(
+        "refresh_token",
+        path=cookie_opts.get("path", "/"),
+        samesite=cookie_opts.get("samesite", "Lax"),
+    )
     return response
 
 
