@@ -49,16 +49,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        """Validate stock availability and order status"""
-        product = data.get('product')
-        quantity = data.get('quantity', 1)
+        """Validate order status; stock validation is handled in services."""
         order = data.get('order')
-
-        # Check stock availability
-        if product and quantity > product.current_stock:
-            raise serializers.ValidationError(
-                f"Insufficient stock. Available: {product.current_stock}, Requested: {quantity}"
-            )
 
         # Prevent adding items to completed or cancelled orders
         if order and order.status != 'P':

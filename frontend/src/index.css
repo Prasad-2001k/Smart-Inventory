@@ -1,4 +1,53 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Global Color Palette Variables */
+:root {
+  /* Primary Colors */
+  --primary-blue: #3066FE;
+  --primary-blue-accent: #4F7BFF;
+  --primary-blue-hover: #1F4FDC;
+  
+  /* Secondary Colors */
+  --secondary-green: #23C468;
+  --secondary-purple: #8A4DFF;
+  
+  /* Backgrounds */
+  --bg-main: #E8ECF3;
+  --bg-card: #FFFFFF;
+  --bg-gradient-start: #F7F9FC;
+  --bg-gradient-end: #EFF3FA;
+  
+  /* Borders & Dividers */
+  --border-light: #E3E6ED;
+  --shadow-color: rgba(0, 0, 0, 0.06);
+  
+  /* Typography */
+  --text-heading: #1C1E21;
+  --text-body: #4A4F5A;
+  --text-muted: #7E8895;
+  
+  /* Button */
+  --btn-primary: #3066FE;
+  --btn-primary-hover: #1F4FDC;
+  --btn-text: #FFFFFF;
+}
+
+/* Global Typography */
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-body);
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-heading);
+  font-weight: 700;
+}
 
 /* Custom animations */
 @keyframes blob {

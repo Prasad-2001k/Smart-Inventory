@@ -20,13 +20,28 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('inventory.urls')),
     # --- JWT Authentication Endpoints ---
-    # 1. Obtain Access/Refresh token pair (Login)
+    # 1. Obtain Access/Refresh token pair (Standard SimpleJWT - alternative to custom login)
+    # Note: Your custom login at api/auth/login/ is preferred and returns user info too
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    # 2. Refresh Access token using Refresh token (Token renewal)
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # Note: api/token/refresh/ is handled by custom token_refresh_cookie in inventory/urls.py
+    # which supports both cookie and body-based refresh tokens
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+
+    path('api/docs/',
+            SpectacularSwaggerView.as_view(url_name='schema'),
+            name='swagger-ui'),
+
+    path('api/redoc/',
+            SpectacularRedocView.as_view(url_name='schema'),
+            name='redoc'),
 ]

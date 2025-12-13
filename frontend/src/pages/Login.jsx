@@ -41,7 +41,7 @@ export default function Login() {
       }
 
       if (result.success) {
-        navigate('/');
+        navigate('/dashboard');
       } else {
         setError(result.error || 'Authentication failed');
       }
@@ -61,33 +61,35 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[#E8ECF3] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#3066FE]/10 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#8A4DFF]/10 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#23C468]/10 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
       
       <div className="max-w-md w-full space-y-8 relative z-10">
         <div>
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg mb-4 transform hover:scale-110 transition-transform">
-              <span className="text-4xl">📦</span>
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#3066FE] to-[#4F7BFF] rounded-2xl shadow-lg mb-4 transform hover:scale-110 transition-transform">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
             </div>
-            <h2 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <h2 className="text-5xl font-extrabold text-[#1C1E21] mb-2">
               Smart Inventory
             </h2>
-            <p className="mt-2 text-gray-600 text-lg font-medium">
+            <p className="mt-2 text-[#4A4F5A] text-lg font-medium">
               {isLogin ? 'Sign in to your account' : 'Create a new account'}
             </p>
           </div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 md:p-10 border border-white/20">
+        <div className="bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.06)] p-8 md:p-10 border border-[#E3E6ED]">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg text-sm shadow-md animate-fade-in">
+              <div className="bg-white border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-[16px] text-sm shadow-[0_4px_20px_rgba(0,0,0,0.06)] animate-fade-in">
                 <div className="flex items-center">
                   <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -98,7 +100,7 @@ export default function Login() {
             )}
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-[#4A4F5A] mb-2">
                 Username
               </label>
               <input
@@ -108,14 +110,14 @@ export default function Login() {
                 required
                 value={form.username}
                 onChange={handleChange}
-                className="appearance-none relative block w-full px-4 py-3.5 border-2 border-gray-200 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all bg-white/50 hover:bg-white hover:border-gray-300 shadow-sm"
+                className="appearance-none relative block w-full px-4 py-3.5 border-2 border-[#E3E6ED] placeholder-[#7E8895] text-[#1C1E21] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3066FE] focus:border-[#3066FE] focus:z-10 sm:text-sm transition-all bg-white hover:bg-white hover:border-[#E3E6ED] shadow-sm"
                 placeholder="Enter your username"
               />
             </div>
 
             {!isLogin && (
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-[#4A4F5A] mb-2">
                   Email
                 </label>
                 <input
@@ -125,14 +127,14 @@ export default function Login() {
                   required={!isLogin}
                   value={form.email}
                   onChange={handleChange}
-                  className="appearance-none relative block w-full px-4 py-3.5 border-2 border-gray-200 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all bg-white/50 hover:bg-white hover:border-gray-300 shadow-sm"
+                  className="appearance-none relative block w-full px-4 py-3.5 border-2 border-[#E3E6ED] placeholder-[#7E8895] text-[#1C1E21] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3066FE] focus:border-[#3066FE] focus:z-10 sm:text-sm transition-all bg-white hover:bg-white hover:border-[#E3E6ED] shadow-sm"
                   placeholder="Enter your email"
                 />
               </div>
             )}
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-[#4A4F5A] mb-2">
                 Password
               </label>
               <input
@@ -142,7 +144,7 @@ export default function Login() {
                 required
                 value={form.password}
                 onChange={handleChange}
-                className="appearance-none relative block w-full px-4 py-3.5 border-2 border-gray-200 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all bg-white/50 hover:bg-white hover:border-gray-300 shadow-sm"
+                className="appearance-none relative block w-full px-4 py-3.5 border-2 border-[#E3E6ED] placeholder-[#7E8895] text-[#1C1E21] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3066FE] focus:border-[#3066FE] focus:z-10 sm:text-sm transition-all bg-white hover:bg-white hover:border-[#E3E6ED] shadow-sm"
                 placeholder="Enter your password"
               />
             </div>
@@ -151,7 +153,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
+                className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-[#3066FE] hover:bg-[#1F4FDC] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3066FE] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 {loading ? (
                   <span className="flex items-center">
@@ -175,7 +177,7 @@ export default function Login() {
                   setError('');
                   setForm({ username: '', email: '', password: '' });
                 }}
-                className="text-sm text-blue-600 hover:text-blue-800 font-semibold transition-colors hover:underline"
+                className="text-sm text-[#3066FE] hover:text-[#1F4FDC] font-semibold transition-colors hover:underline"
               >
                 {isLogin ? (
                   <>Don't have an account? <span className="underline">Sign up</span></>

@@ -54,6 +54,7 @@ else:
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",   # React
         "http://localhost:5173",   # Vite
+        "http://localhost:5174",
         "http://localhost:8080",   # Vue
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
@@ -83,6 +84,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',  
     'rest_framework_simplejwt',
+    'drf_spectacular',
 
     # project app
     'inventory'
@@ -97,6 +99,9 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 from datetime import timedelta

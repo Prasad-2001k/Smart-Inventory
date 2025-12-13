@@ -13,7 +13,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django_filters.rest_framework import DjangoFilterBackend
 
+from django.core.exceptions import ValidationError
+
 from .models import Product, Category, Supplier, Order, OrderItem
+from .services import order_service
 
 
 def _refresh_cookie_settings():
@@ -158,38 +161,24 @@ class OrderViewSet(viewsets.ModelViewSet):
         Custom action to cancel an order.
         Restores product stock for all items in the order.
         """
-        with transaction.atomic():
-            order = self.get_object()
+        order = self.get_object()
 
-            if order.status == "X":
-                return Response(
-                    {"error": "Order is already cancelled."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            if order.status == "C":
-                return Response(
-                    {"error": "Cannot cancel a completed order."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        if order.status == "X":
+            return Response(
+                {"error": "Order is already cancelled."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if order.status == "C":
+            return Response(
+                {"error": "Cannot cancel a completed order."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-            # Restore stock for each item in the order
-            items_qs = OrderItem.objects.select_related("product").filter(order=order)
-            product_ids = [item.product_id for item in items_qs]
-
-            if product_ids:
-                products_qs = Product.objects.select_for_update().filter(
-                    id__in=product_ids
-                )
-                products_map = {p.id: p for p in products_qs}
-
-                for item in items_qs:
-                    product = products_map.get(item.product_id)
-                    if product:
-                        product.current_stock += item.quantity
-                        product.save(update_fields=["current_stock"])
-
-            order.status = "X"
-            order.save(update_fields=["status"])
+        try:
+            order_service.restore_stock(order, set_status=True)
+        except ValidationError as exc:
+            message = exc.messages[0] if hasattr(exc, "messages") else str(exc)
+            return Response({"detail": message}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(order)
         return Response(serializer.data)
@@ -228,64 +217,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         items = serializer.validated_data.pop("items", [])
 
-        # If no items provided, allow creating an empty order (frontend two-step flow)
-        if not items:
-            order = serializer.save()
-            out_serializer = self.get_serializer(order)
-            return Response(out_serializer.data, status=status.HTTP_201_CREATED)
-
-        # Collect product ids from the Product instances in items
-        product_ids = [item["product"].id for item in items]
-
-        with transaction.atomic():
-            # Lock the related products (SELECT FOR UPDATE)
-            products_qs = Product.objects.select_for_update().filter(
-                id__in=product_ids
-            )
-            products_map = {p.id: p for p in products_qs}
-
-            # Validate stock for each item
-            for it in items:
-                product = it["product"]  # Product instance
-                qty = int(it["quantity"])
-
-                locked_product = products_map.get(product.id)
-                if not locked_product:
-                    return Response(
-                        {"detail": f"Product {product.id} not found."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                if qty <= 0:
-                    return Response(
-                        {
-                            "detail": f"Quantity must be positive for product {product.id}."
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                if locked_product.current_stock < qty:
-                    return Response(
-                        {
-                            "detail": f"Insufficient stock for product "
-                            f"{locked_product.id} ({locked_product.name})."
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-            # Create the order first (without items)
-            order = serializer.save()
-
-            # Create OrderItems; stock will be deducted by signal on OrderItem post_save
-            for it in items:
-                product = it["product"]
-                qty = int(it["quantity"])
-                OrderItem.objects.create(
-                    order=order,
-                    product=product,
-                    quantity=qty,
-                    price_at_purchase=product.price,
-                )
+        try:
+            with transaction.atomic():
+                order = serializer.save()
+                order_service.add_order_items(order, items)
+        except ValidationError as exc:
+            message = exc.messages[0] if hasattr(exc, "messages") else str(exc)
+            return Response({"detail": message}, status=status.HTTP_400_BAD_REQUEST)
 
         out_serializer = self.get_serializer(order)
         return Response(out_serializer.data, status=status.HTTP_201_CREATED)
@@ -302,6 +240,27 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     filterset_fields = ["order", "product"]
     ordering_fields = ["order", "product"]
     ordering = ["order", "product"]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        order = serializer.validated_data["order"]
+        product = serializer.validated_data["product"]
+        quantity = serializer.validated_data.get("quantity", 1)
+
+        try:
+            created_items = order_service.add_order_items(
+                order, [{"product": product, "quantity": quantity}]
+            )
+        except ValidationError as exc:
+            message = exc.messages[0] if hasattr(exc, "messages") else str(exc)
+            return Response({"detail": message}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_item = created_items[0]
+        output = self.get_serializer(created_item)
+        headers = self.get_success_headers(output.data)
+        return Response(output.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 # --------------------------
@@ -342,7 +301,7 @@ def register(request):
             },
             "tokens": {
                 "access": access_token,
-                "refresh": refresh_token,  # return refresh for body-based flow
+                # Refresh token is only in HttpOnly cookie, not in response body
             },
         },
         status=status.HTTP_201_CREATED,
@@ -390,7 +349,7 @@ def login(request):
             },
             "tokens": {
                 "access": access_token,
-                "refresh": refresh_token,  # return refresh for body-based flow
+                # Refresh token is only in HttpOnly cookie, not in response body
             },
         },
         status=status.HTTP_200_OK,
@@ -405,11 +364,9 @@ def login(request):
 @permission_classes([AllowAny])
 def token_refresh_cookie(request):
     """
-    Issue a new access token using the refresh token.
-    - Tries HttpOnly cookie `refresh_token`
-    - Falls back to JSON body {"refresh": "<token>"}
+    Issue a new access token using the refresh token from HttpOnly cookie only.
     """
-    refresh_token = request.COOKIES.get("refresh_token") or request.data.get("refresh")
+    refresh_token = request.COOKIES.get("refresh_token")
     if not refresh_token:
         return Response(
             {"detail": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED

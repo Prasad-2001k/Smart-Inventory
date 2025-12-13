@@ -17,16 +17,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tokens, setTokens] = useState(() => {
-    // Load tokens from localStorage on initialization
+    // Only load access token from localStorage (refresh token is in HttpOnly cookie)
     const storedTokens = localStorage.getItem('tokens');
     return storedTokens ? JSON.parse(storedTokens) : null;
   });
 
   const logout = useCallback(async () => {
     try {
-      if (tokens?.refresh) {
-        await api.post('auth/logout/', { refresh: tokens.refresh });
-      }
+      // Refresh token is in HttpOnly cookie, backend will handle it
+      await api.post('auth/logout/');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -34,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       setTokens(null);
       localStorage.removeItem('tokens');
     }
-  }, [tokens]);
+  }, []);
 
   // Set up axios interceptor to include token in requests
   useEffect(() => {
@@ -55,19 +54,17 @@ export const AuthProvider = ({ children }) => {
         const originalRequest = error.config;
 
         // If error is 401 and we haven't tried to refresh yet
-        if (error.response?.status === 401 && !originalRequest._retry && tokens?.refresh) {
+        if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
 
           try {
-            // Try to refresh the token
-            // Note: This endpoint is at /api/token/refresh/ (not under /api/auth/)
-            const response = await api.post('token/refresh/', {
-              refresh: tokens.refresh,
-            });
+            // Try to refresh the token using HttpOnly cookie
+            // Refresh token is automatically sent via cookie, no need to pass it in body
+            const response = await api.post('token/refresh/');
 
             const newTokens = {
               access: response.data.access,
-              refresh: tokens.refresh, // Keep the same refresh token
+              // Refresh token remains in HttpOnly cookie, not stored in state
             };
 
             setTokens(newTokens);
@@ -120,8 +117,9 @@ export const AuthProvider = ({ children }) => {
       const { user: userData, tokens: newTokens } = response.data;
 
       setUser(userData);
-      setTokens(newTokens);
-      localStorage.setItem('tokens', JSON.stringify(newTokens));
+      // Only store access token, refresh token is in HttpOnly cookie
+      setTokens({ access: newTokens.access });
+      localStorage.setItem('tokens', JSON.stringify({ access: newTokens.access }));
 
       return { success: true };
     } catch (error) {
@@ -136,8 +134,9 @@ export const AuthProvider = ({ children }) => {
       const { user: userData, tokens: newTokens } = response.data;
 
       setUser(userData);
-      setTokens(newTokens);
-      localStorage.setItem('tokens', JSON.stringify(newTokens));
+      // Only store access token, refresh token is in HttpOnly cookie
+      setTokens({ access: newTokens.access });
+      localStorage.setItem('tokens', JSON.stringify({ access: newTokens.access }));
 
       return { success: true };
     } catch (error) {
