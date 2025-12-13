@@ -85,14 +85,18 @@ export default function Home() {
                     </div>
 
                     {/* Stats Cards */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gradient-to-br from-[#3066FE] to-[#4F7BFF] rounded-2xl p-6 text-white">
-                        <div className="text-3xl font-bold mb-2">1,234</div>
-                        <div className="text-sm opacity-90">Total Products</div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-gradient-to-br from-[#3066FE] to-[#4F7BFF] rounded-2xl p-4 text-white">
+                        <div className="text-2xl font-bold mb-1">1,234</div>
+                        <div className="text-xs opacity-90">Total Products</div>
                       </div>
-                      <div className="bg-gradient-to-br from-[#23C468] to-[#23C468]/80 rounded-2xl p-6 text-white">
-                        <div className="text-3xl font-bold mb-2">567</div>
-                        <div className="text-sm opacity-90">Orders Today</div>
+                      <div className="bg-gradient-to-br from-[#FFA726] to-[#FF9800] rounded-2xl p-4 text-white">
+                        <div className="text-2xl font-bold mb-1">45</div>
+                        <div className="text-xs opacity-90">Low Stock</div>
+                      </div>
+                      <div className="bg-gradient-to-br from-[#EF5350] to-[#E53935] rounded-2xl p-4 text-white">
+                        <div className="text-2xl font-bold mb-1">12</div>
+                        <div className="text-xs opacity-90">Out of Stock</div>
                       </div>
                     </div>
 

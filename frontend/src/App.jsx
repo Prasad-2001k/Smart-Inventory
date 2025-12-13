@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import InventoryManager from './pages/InventoryManager';
 import OrderSystem from './pages/OrderSystem';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import { fetchProducts } from './api/api';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -24,69 +25,172 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-// A simple Home/Dashboard component to welcome users
+// Dashboard component matching homepage design
 const Dashboard = () => {
   const { user } = useAuth();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    lowStock: 0,
+    outOfStock: 0,
+  });
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchProducts();
+        const productsData = response.data.results || response.data;
+        setProducts(productsData);
+        
+        // Calculate stats
+        const total = productsData.length;
+        const lowStock = productsData.filter(p => p.current_stock > 0 && p.current_stock < 10).length;
+        const outOfStock = productsData.filter(p => p.current_stock === 0).length;
+        
+        setStats({
+          totalProducts: total,
+          lowStock: lowStock,
+          outOfStock: outOfStock,
+        });
+      } catch (error) {
+        console.error('Error loading products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  // Generate sample chart data (last 7 days)
+  const chartData = [65, 80, 45, 90, 70, 85, 60];
+  const chartLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   
   return (
     <div className="min-h-screen bg-[#E8ECF3] pt-32 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-                <h1 className="text-5xl md:text-6xl font-bold text-[#1C1E21] mb-4">
-                    Smart Inventory Dashboard
-                </h1>
-                <p className="text-xl md:text-2xl text-[#4A4F5A] max-w-2xl mx-auto">
-                    Welcome{user ? `, ${user.username}` : ''} to your comprehensive inventory management system
-                </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-                <Link to="/manage" className="group bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 p-8 border border-[#E3E6ED] hover:border-[#3066FE]/30 cursor-pointer transform hover:-translate-y-1">
-                    <div className="w-20 h-20 bg-gradient-to-br from-[#3066FE] to-[#4F7BFF] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                        <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-[#1C1E21] mb-3">Manage Inventory</h3>
-                    <p className="text-[#4A4F5A] leading-relaxed mb-4">
-                        Add products, categories, and suppliers to build your inventory database
-                    </p>
-                    <div className="mt-4 text-[#3066FE] font-semibold flex items-center group-hover:translate-x-2 transition-transform">
-                        Get Started →
-                    </div>
-                </Link>
-                
-                <Link to="/orders" className="group bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 p-8 border border-[#E3E6ED] hover:border-[#23C468]/30 cursor-pointer transform hover:-translate-y-1">
-                    <div className="w-20 h-20 bg-gradient-to-br from-[#23C468] to-[#23C468]/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                        <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-[#1C1E21] mb-3">Place Orders</h3>
-                    <p className="text-[#4A4F5A] leading-relaxed mb-4">
-                        Create orders and automatically update stock levels in real-time
-                    </p>
-                    <div className="mt-4 text-[#23C468] font-semibold flex items-center group-hover:translate-x-2 transition-transform">
-                        Get Started →
-                    </div>
-                </Link>
-                
-                <Link to="/manage" className="group bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 p-8 border border-[#E3E6ED] hover:border-[#8A4DFF]/30 cursor-pointer transform hover:-translate-y-1">
-                    <div className="w-20 h-20 bg-gradient-to-br from-[#8A4DFF] to-[#8A4DFF]/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                        <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold text-[#1C1E21] mb-3">Track Stock</h3>
-                    <p className="text-[#4A4F5A] leading-relaxed mb-4">
-                        Monitor inventory levels and get alerts for low stock items
-                    </p>
-                    <div className="mt-4 text-[#8A4DFF] font-semibold flex items-center group-hover:translate-x-2 transition-transform">
-                        View Stock →
-                    </div>
-                </Link>
-            </div>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#1C1E21] mb-2">
+            Dashboard
+          </h1>
+          <p className="text-lg text-[#4A4F5A]">
+            Welcome{user ? `, ${user.username}` : ''} - Overview of your inventory
+          </p>
         </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Products */}
+          <div className="bg-gradient-to-br from-[#3066FE] to-[#4F7BFF] rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-4xl font-bold mb-2">
+                  {loading ? '...' : stats.totalProducts.toLocaleString()}
+                </div>
+                <div className="text-sm opacity-90">Total Products</div>
+              </div>
+              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Low Stock */}
+          <div className="bg-gradient-to-br from-[#FFA726] to-[#FF9800] rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-4xl font-bold mb-2">
+                  {loading ? '...' : stats.lowStock.toLocaleString()}
+                </div>
+                <div className="text-sm opacity-90">Low Stock</div>
+              </div>
+              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Out of Stock */}
+          <div className="bg-gradient-to-br from-[#EF5350] to-[#E53935] rounded-2xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-4xl font-bold mb-2">
+                  {loading ? '...' : stats.outOfStock.toLocaleString()}
+                </div>
+                <div className="text-sm opacity-90">Out of Stock</div>
+              </div>
+              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Chart Section */}
+        <div className="bg-white rounded-[30px] shadow-[0_20px_60px_rgba(0,0,0,0.1)] p-8 lg:p-12 border border-[#E3E6ED] mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-semibold text-[#1C1E21]">Stock Overview</h3>
+            <div className="text-sm text-[#7E8895]">Last 7 days</div>
+          </div>
+          {/* Bar Chart */}
+          <div className="flex items-end justify-between h-48 space-x-2">
+            {chartData.map((height, index) => (
+              <div key={index} className="flex-1 flex flex-col items-center group">
+                <div className="relative w-full flex items-end justify-center h-full">
+                  <div
+                    className="w-full bg-gradient-to-t from-[#3066FE] to-[#4F7BFF] rounded-t-lg transition-all hover:opacity-80 cursor-pointer group-hover:from-[#1F4FDC] group-hover:to-[#3066FE]"
+                    style={{ height: `${height}%` }}
+                    title={`${chartLabels[index]}: ${height}%`}
+                  ></div>
+                </div>
+                <div className="text-xs text-[#7E8895] mt-2 font-medium">{chartLabels[index]}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Link to="/manage" className="group bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 p-8 border border-[#E3E6ED] hover:border-[#3066FE]/30 cursor-pointer transform hover:-translate-y-1">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#3066FE] to-[#4F7BFF] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-[#1C1E21] mb-3">Manage Inventory</h3>
+            <p className="text-[#4A4F5A] leading-relaxed mb-4">
+              Add products, categories, and suppliers to build your inventory database
+            </p>
+            <div className="mt-4 text-[#3066FE] font-semibold flex items-center group-hover:translate-x-2 transition-transform">
+              Get Started →
+            </div>
+          </Link>
+          
+          <Link to="/orders" className="group bg-white rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 p-8 border border-[#E3E6ED] hover:border-[#23C468]/30 cursor-pointer transform hover:-translate-y-1">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#23C468] to-[#23C468]/80 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-[#1C1E21] mb-3">Place Orders</h3>
+            <p className="text-[#4A4F5A] leading-relaxed mb-4">
+              Create orders and automatically update stock levels in real-time
+            </p>
+            <div className="mt-4 text-[#23C468] font-semibold flex items-center group-hover:translate-x-2 transition-transform">
+              Get Started →
+            </div>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
